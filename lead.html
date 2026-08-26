@@ -72,30 +72,145 @@
   .status.err { display: block; background: #fbecec; color: var(--error); border: 1px solid #f0cccc; }
   select { -webkit-appearance: none; appearance: none; }
   .loadingBanner { text-align: center; padding: 20px; color: var(--muted); font-size: 14px; }
+
+  .script-panel {
+    background: #fff; border: 1px solid var(--border); border-radius: 16px;
+    margin-top: 20px; overflow: hidden;
+  }
+  .script-panel > summary {
+    padding: 18px 24px; cursor: pointer; list-style: none;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'DM Serif Display', serif; font-size: 18px;
+  }
+  .script-panel > summary::-webkit-details-marker { display: none; }
+  .script-panel > summary::after {
+    content: '+'; font-family: 'Instrument Sans', sans-serif; font-size: 22px;
+    color: var(--rose-dark); transition: transform 0.15s ease;
+  }
+  .script-panel[open] > summary::after { transform: rotate(45deg); }
+  .script-body { padding: 4px 24px 24px; font-size: 14px; line-height: 1.6; }
+  .script-body h3 {
+    font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 15px;
+    color: var(--rose-dark); margin: 22px 0 8px;
+  }
+  .script-body h3:first-child { margin-top: 0; }
+  .script-quote {
+    background: var(--warm-white); border-radius: 10px; padding: 12px 14px;
+    margin: 8px 0; font-style: italic; border-inline-start: 3px solid var(--rose);
+  }
+  .script-note { color: var(--muted); font-size: 13px; margin: 6px 0; }
+  .script-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  .script-table th {
+    text-align: left; background: var(--warm-white); padding: 8px 10px;
+    font-weight: 600; color: var(--rose-dark); border-bottom: 1px solid var(--border);
+  }
+  .script-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .script-table tr:last-child td { border-bottom: none; }
+  .script-panel details { margin-top: 14px; }
+  .script-panel details > summary {
+    cursor: pointer; font-weight: 600; color: var(--rose-dark); font-size: 14px;
+    padding: 8px 0; list-style: none;
+  }
+  .script-panel details > summary::-webkit-details-marker { display: none; }
+  .script-panel details > summary::before { content: '▸ '; }
+  .script-panel details[open] > summary::before { content: '▾ '; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="back" href="index.html">← Do listy klientów</a>
+  <a class="back" href="index.html">← Wróć do listy klientów</a>
   <div class="logo">gili<span>.</span></div>
   <div class="loadingBanner" id="loadingBanner">Ładowanie istniejących danych...</div>
 
-  <!-- Rozmowa otwierająca -->
+  <details class="script-panel">
+    <summary>📋 Skrypt rozmowy telefonicznej</summary>
+    <div class="script-body">
+
+      <h3>Czym jest Gili — jedno zdanie na każdy moment rozmowy</h3>
+      <p class="script-note">Nie tylko przy obiekcji cenowej — to zdanie może się przydać w dowolnym momencie.</p>
+      <p class="script-quote">„To nie jest nowa aplikacja — to po prostu Pani WhatsApp, tylko że sam się tym zajmuje, i dzięki temu klientki wracają.”</p>
+      <p class="script-note">Dłuższa wersja — kiedy jest więcej czasu, np. po Kroku 2:</p>
+      <p class="script-quote">„To nie jest nowa aplikacja — to zwyczajnie Pani WhatsApp, tylko że Gili sama odpowiada na wiadomości i prowadzi całą relację z klientką: umawia wizytę, a po kilku tygodniach sama do niej pisze, żeby zapytać, czy nie chciałaby przyjść znowu — i naprawdę duża część wtedy wraca. Więc oszczędza to Pani czas, a przy okazji utrzymuje kontakt z klientkami i przynosi więcej wizyt od Pani stałych klientek.”</p>
+
+      <h3>Krok 1 — Otwarcie</h3>
+      <p class="script-note">Pytanie ogólne, nie prośba o konkretny termin.</p>
+      <p class="script-quote">„Dzień dobry, chciałabym zapytać — jak można się u Państwa umówić na wizytę?”</p>
+
+      <h3>Krok 2 — Przejście</h3>
+      <p class="script-quote">„Właściwie nie dzwonię jako klientka — chciałam się tylko dowiedzieć, jak to u Państwa działa. Tworzę coś dla salonów w Wiedniu, co automatycznie odpowiada na takie zapytania. Ma Pani dwie minuty?”</p>
+      <p class="script-note">Jeśli nie ma czasu:</p>
+      <p class="script-quote">„Nie szkodzi — kiedy będzie lepszy moment, żebym oddzwoniła?”</p>
+
+      <h3>Krok 3 — Pytanie</h3>
+      <p class="script-quote">„Jak to u Pani wygląda na co dzień — dostaje Pani dużo zapytań przez WhatsApp, kiedy jest Pani zajęta z klientkami?”</p>
+      <p class="script-note">Tu milczymy i słuchamy. Odpowiedź decyduje, którego argumentu użyć dalej.</p>
+
+      <h3>Krok 4 — Wartość, w zależności od sytuacji</h3>
+      <table class="script-table">
+        <tr><th>Sytuacja</th><th>Zdanie</th></tr>
+        <tr><td>Korzysta z Treatwell</td><td>Booksy czy Treatwell są świetne do zdobywania nowych klientek, ale Gili jest po to, żeby zostać w kontakcie z tymi, które Pani już ma, przez WhatsApp, i zadbać, żeby wracały — i to wszystko automatycznie. Dzięki temu też płaci Pani mniejszą prowizję.</td></tr>
+        <tr><td>Długie zabiegi / trudno dostępna</td><td>Kiedy jest Pani z klientką, nikt nie może odpowiedzieć. Gili może — od razu, nawet wieczorem.</td></tr>
+        <tr><td>Rezerwacje tylko telefonicznie</td><td>Gili robi to automatycznie przez WhatsApp, więc nie musi Pani odbierać telefonu — i oszczędza to Pani cenny czas na odpowiadanie.</td></tr>
+      </table>
+      <p class="script-quote">„Klientka pisze o 22:00, Gili odpowiada natychmiast i umawia wizytę prosto w Pani kalendarzu. Pani śpi, a to już załatwione.”</p>
+
+      <h3>Krok 5 — Typowe obiekcje</h3>
+      <table class="script-table">
+        <tr><th>Obiekcja</th><th>Odpowiedź</th></tr>
+        <tr><td>„Nie potrzebuję tego”</td><td>Rozumiem — czy mogę zapytać, ile zapytań, jak Pani sądzi, teraz Pani umyka?</td></tr>
+        <tr><td>„Ile to kosztuje?”</td><td>Zaczyna Pani bez karty kredytowej, z darmowym pierwszym miesiącem. A poza tym to zależy od salonu — najprościej będzie, jeśli szybko pokażę, wtedy zobaczy Pani też cenę.</td></tr>
+        <tr><td>„Nie mam teraz czasu”</td><td>Ustalamy termin oddzwonienia — bez naciskania.</td></tr>
+      </table>
+
+      <h3>Krok 6 — Zamknięcie</h3>
+      <p class="script-note">Nie zamykamy sprzedaży przez telefon — chyba że klientka sama nas zaskoczy. Zawsze dążymy do dalszego kontaktu: wysłanie demo, link do strony, lub rozmowa uzupełniająca z osobą decyzyjną.</p>
+      <p class="script-quote">„Chętnie pokażę Pani w 10 minut, jak to mogłoby wyglądać w Pani salonie — kiedy będzie Pani pasowało w tym tygodniu?”</p>
+      <p class="script-quote">Wiadomość demo Florence: „Dzień dobry, witamy w Florence Beauty Salon 😊 Czy chcieliby Państwo umówić wizytę?”</p>
+
+      <h3>Jeśli odbiera nie właścicielka</h3>
+      <p class="script-quote">„Czy mogłabym krótko porozmawiać z właścicielką? To krótka sprawa biznesowa, nie prośba klientki.”</p>
+      <p class="script-note">Jeśli właścicielki nie ma — mimo to prowadzimy krótką, dobrą rozmowę i zbieramy informacje, tak aby zależało jej na przekazaniu nas do osoby decyzyjnej.</p>
+
+      <details>
+        <summary>Odpowiedzi eksperckie — jak Gili wspiera to, co salon już robi</summary>
+        <p class="script-note">Zasada: nie podważamy tego, co salon już robi — pokazujemy, że Gili wypełnia dokładnie te luki, które już istnieją.</p>
+        <table class="script-table">
+          <tr><th>Co mówi salon</th><th>Odpowiedź</th></tr>
+          <tr><td>„Tylko telefonicznie”</td><td>Czyli każde zapytanie trafia bezpośrednio do Pani. Problem pojawia się, kiedy nie może Pani odebrać. Gili nie zastępuje telefonu, tylko przechwytuje to, co dziś umyka — zapytania na WhatsAppie, na które prawdopodobnie nikt nie odpowiada.</td></tr>
+          <tr><td>„Na WhatsAppie, sama odpowiadam”</td><td>To dokładnie ten kanał, który przejmuje Gili. Różnica to dostępność — Gili odpowiada w kilka sekund, także o 22:00. Nie traci Pani kontroli, po prostu nie musi być Pani dostępna cały czas.</td></tr>
+          <tr><td>„Mamy Booksy / Treatwell / Fresha”</td><td>Te platformy świetnie sprawdzają się w pozyskiwaniu nowych klientek — tam ktoś Panią znajduje. Gili działa na innej warstwie: utrzymanie kontaktu z tymi, które już są Pani klientkami. Umawia kolejną wizytę, a także wysyła zaproszenie, żeby wróciła, żeby nie uciekła do kogoś innego.</td></tr>
+          <tr><td>„Na Instagramie”</td><td>To też kanał, na który Gili odpowiada — obecnie w fazie beta. Ta sama zasada: natychmiastowa odpowiedź, bez przerywania pracy.</td></tr>
+          <tr><td>„Po prostu przychodzą, bez rezerwacji”</td><td>Gili pomaga wtedy gdzie indziej — utrzymuje kontakt z tymi, które już u Pani były, żeby pamiętały, by wrócić, bez odbierania elastyczności, którą Pani już ma.</td></tr>
+          <tr><td>„Jesteśmy zamknięte dziś / w tym tygodniu”</td><td>To właśnie wtedy najłatwiej tracić zapytania. Gili odpowiada nawet wtedy, gdy salon jest zamknięty, i umawia wizytę zgodnie z Pani kalendarzem, gdy Pani wróci.</td></tr>
+          <tr><td>„Jestem zajęta na dwa miesiące do przodu”</td><td>To świetny znak popytu. Gili to po prostu sposób na zarządzanie kontaktem z tyloma osobami — prosto w WhatsAppie, bez osobnej aplikacji. Widzi Pani całą komunikację z klientkami i może w każdej chwili poprosić Gili, żeby się do nich odezwała, a Gili oczywiście od razu odpowiada, kiedy któraś chce się umówić albo przełożyć wizytę.</td></tr>
+          <tr><td>„Radzę sobie świetnie sama”</td><td>Rozumiem, że dobrze Pani to ogarnia. Pytanie, które sobie zadaję, to nie czy Pani sobie radzi — tylko ile czasu to zajmuje, i czy wykorzystuje Pani cały potencjał swoich klientek, czy one wracają. Gili nie ma Pani zastąpić — oszczędza Pani czas przy odpowiadaniu i dba o to, żeby klientki wracały.</td></tr>
+          <tr><td>„Nie mam problemu z odwołaniami / no-shows”</td><td>Miło słyszeć. Mimo to, kiedy kalendarz jest pełny na dwa miesiące, każde niewykorzystane odwołanie to przychód, który nie wraca. Gili wysyła automatyczne przypomnienia przed wizytą, dzięki czemu klientki rzadziej zapominają i rzadziej odwołują w ostatniej chwili.</td></tr>
+          <tr><td>„Mam już stałe klientki, nie potrzebuję więcej”</td><td>Wspaniale, że ma Pani stałe klientki. Gili jest właśnie po to, żeby odpowiadać natychmiast, kiedy chcą przełożyć wizytę, a także po to, żeby dbać o to, żeby kontakt z nimi nie urwał się. Gili sama się do nich odzywa, przekazuje im promocje, zaprasza je, żeby wróciły.</td></tr>
+        </table>
+      </details>
+
+      <p class="script-note" style="margin-top:16px;"><strong>2 rzeczy, które można jej wysłać automatycznie:</strong> 1) link do strony internetowej, 2) demo salonu Florence — samo kontaktuje się z nią i pyta, czy chce umówić wizytę.</p>
+      <p class="script-note">Jeśli klientka zgadza się już w trakcie rozmowy, wysyłana jest też wiadomość zamykająca, która od razu rozpoczyna proces wdrożenia.</p>
+
+    </div>
+  </details>
+
+  <!-- Rozmowa wstępna -->
   <div class="card">
     <div class="card-head">
       <span class="step-badge">1</span>
       <div>
-        <p class="card-title">Rozmowa otwierająca</p>
-        <p class="card-sub">Wstępny wywiad — dane firmy i przebieg rozmowy</p>
+        <p class="card-title">Rozmowa wstępna</p>
+        <p class="card-sub">Pierwszy kontakt — informacje o salonie i przebieg rozmowy</p>
       </div>
     </div>
     <form id="openingForm">
       <div class="field">
-        <label for="repName">Imię osoby dzwoniącej</label>
+        <label for="repName">Imię konsultanta/konsultantki</label>
         <input type="text" id="repName" name="repName" required>
       </div>
       <div class="field">
-        <label for="contactName">Imię i nazwisko osoby kontaktowej</label>
+        <label for="contactName">Imię osoby kontaktowej</label>
         <input type="text" id="contactName" name="contactName" required>
       </div>
       <div class="field">
@@ -107,11 +222,11 @@
         <input type="text" id="city" name="city" required>
       </div>
       <div class="field">
-        <label for="stylistCount">Liczba stylistek/pracowników</label>
+        <label for="stylistCount">Liczba stylistek/pracownic</label>
         <input type="number" id="stylistCount" name="stylistCount" min="1">
       </div>
       <div class="field">
-        <label>W jaki sposób można się dziś u niej umówić</label>
+        <label>Jak można dziś zarezerwować wizytę</label>
         <div class="checkbox-group">
           <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="treatwell"> Treatwell</label>
           <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="booksy"> Booksy</label>
@@ -125,7 +240,7 @@
         </div>
       </div>
       <div class="field">
-        <label for="callNotes">Przebieg rozmowy i zastrzeżenia</label>
+        <label for="callNotes">Jak przebiegła rozmowa i jakie były zastrzeżenia</label>
         <textarea id="callNotes" name="callNotes"></textarea>
       </div>
       <div class="field">
@@ -136,21 +251,21 @@
           <option value="interested_followup">Zainteresowana — oddzwonić</option>
           <option value="objection">Niezainteresowana / zastrzeżenia</option>
           <option value="no_answer">Nie odebrała</option>
-          <option value="wrong_number">Zły numer / nieaktualny</option>
+          <option value="wrong_number">Błędny numer / nieaktualny</option>
           <option value="other">Inne</option>
         </select>
       </div>
       <div class="field">
-        <label for="followUpDate">Termin ustalony na rozmowę zamykającą</label>
+        <label for="followUpDate">Termin ustalonej rozmowy zamykającej</label>
         <input type="date" id="followUpDate" name="followUpDate">
       </div>
       <div class="field">
         <label for="openingWhatsapp">Numer WhatsApp</label>
-        <input type="tel" id="openingWhatsapp" name="openingWhatsapp" placeholder="436761234567">
-        <span class="hint">Wymagane tylko, jeśli teraz wysyłasz link lub numer demo</span>
+        <input type="tel" id="openingWhatsapp" name="openingWhatsapp" placeholder="48123456789">
+        <span class="hint">Wymagane tylko jeśli wysyłasz teraz link lub numer demo</span>
       </div>
       <div class="field">
-        <label>Wysłać jej teraz link do strony Gili?</label>
+        <label>Wysłać teraz link do strony Gili?</label>
         <div class="toggle-row">
           <div class="toggle-opt" data-value="yes" id="sendLinkYes">Tak</div>
           <div class="toggle-opt" data-value="no" id="sendLinkNo">Nie</div>
@@ -158,7 +273,7 @@
         <input type="hidden" id="sendLink" name="sendLink" required>
       </div>
       <div class="field">
-        <label>Wysłać jej też numer demo Florence?</label>
+        <label>Wysłać też numer demo Florence?</label>
         <div class="toggle-row">
           <div class="toggle-opt" data-value="yes" id="sendDemoYes">Tak</div>
           <div class="toggle-opt" data-value="no" id="sendDemoNo">Nie</div>
@@ -187,11 +302,11 @@
       </div>
       <div class="field">
         <label for="whatsapp">Numer WhatsApp</label>
-        <input type="tel" id="whatsapp" name="whatsapp" placeholder="436761234567" required>
-        <span class="hint">Format międzynarodowy, bez + i bez spacji — na ten numer zostanie wysłana wiadomość powitalna</span>
+        <input type="tel" id="whatsapp" name="whatsapp" placeholder="48123456789" required>
+        <span class="hint">Format międzynarodowy, bez + i bez spacji — na ten numer trafi wiadomość powitalna</span>
       </div>
       <div class="field">
-        <label for="closingCallNotes">Przebieg rozmowy i zastrzeżenia</label>
+        <label for="closingCallNotes">Jak przebiegła rozmowa i jakie były zastrzeżenia</label>
         <textarea id="closingCallNotes" name="closingCallNotes"></textarea>
       </div>
       <div class="field">
@@ -201,7 +316,7 @@
           <option value="agreed">Zamknięto</option>
           <option value="hesitant">Waha się — oddzwonić</option>
           <option value="declined">Odmówiła</option>
-          <option value="unreachable">Nie udało się dodzwonić</option>
+          <option value="unreachable">Nie udało się skontaktować</option>
           <option value="other">Inne</option>
         </select>
       </div>
@@ -224,14 +339,11 @@
 </div>
 
 <script>
-  // TODO: zamień na odpowiednie produkcyjne adresy URL w n8n
+  // TODO: zamienić na Production URL odpowiednich webhooków w n8n
   const GET_URL = "https://maibarzilay.app.n8n.cloud/webhook/lead-get-pl";     // GET ?id=
   const SAVE_URL = "https://maibarzilay.app.n8n.cloud/webhook/lead-save-pl";   // POST
 
-  // Każda opublikowana wersja tej strony jest przeznaczona tylko dla jednego kraju/języka,
-  // ponieważ każdy język jest podpięty pod swój zatwierdzony template. Aby zduplikować cały
-  // folder dla każdego kraju, zmień tylko poniższą linię w kopii:
-  const TEMPLATE_LANG = "pl"; // de | fr | es | pl
+  const TEMPLATE_LANG = "pl";
 
   const params = new URLSearchParams(location.search);
   let leadId = params.get('id');
@@ -313,6 +425,7 @@
   }
 
   (async function load() {
+    let foundExisting = false;
     try {
       const res = await fetch(`${GET_URL}?id=${encodeURIComponent(leadId)}`);
       if (res.ok) {
@@ -320,11 +433,22 @@
         if (data && Object.keys(data).length) {
           fillForm(openingForm, data);
           fillForm(closingForm, data);
+          foundExisting = true;
         }
       }
     } catch (err) {
-      // Nowy klient, który jeszcze nie został zapisany — to normalne, po prostu kontynuujemy z pustym formularzem
+      // nowy klient jeszcze niezapisany — to normalne, kontynuujemy z pustym formularzem
     } finally {
+      if (!foundExisting) {
+        const urlSalonName = params.get('salonName');
+        const urlWhatsapp = params.get('whatsapp');
+        if (urlSalonName) {
+          document.getElementById('salonName').value = urlSalonName;
+        }
+        if (urlWhatsapp) {
+          document.getElementById('openingWhatsapp').value = urlWhatsapp;
+        }
+      }
       loadingBanner.style.display = 'none';
     }
   })();
@@ -361,7 +485,7 @@
         : 'Zapisano pomyślnie.';
       statusEl.className = 'status ok';
     } catch (err) {
-      statusEl.textContent = 'Coś poszło nie tak podczas zapisywania. Spróbuj ponownie, a jeśli problem się powtarza — poinformuj Mai.';
+      statusEl.textContent = 'Coś poszło nie tak. Spróbuj ponownie, a jeśli problem się powtarza — zgłoś to Mai.';
       statusEl.className = 'status err';
     } finally {
       btn.disabled = false;
@@ -373,15 +497,15 @@
     e.preventDefault();
     saveSlice(openingForm, 'opening', document.getElementById('openingSaveBtn'), openingStatus, () => {
       if (!sendLinkInput.value) {
-        alert('Trzeba zaznaczyć tak/nie w sprawie wysłania linku przed zapisaniem');
+        alert('Zaznacz Tak/Nie przy wysyłce linku przed zapisem');
         return false;
       }
       if (!sendDemoInput.value) {
-        alert('Trzeba zaznaczyć tak/nie w sprawie wysłania numeru demo przed zapisaniem');
+        alert('Zaznacz Tak/Nie przy wysyłce numeru demo przed zapisem');
         return false;
       }
       if ((sendLinkInput.value === 'yes' || sendDemoInput.value === 'yes') && !document.getElementById('openingWhatsapp').value.trim()) {
-        alert('Trzeba podać numer WhatsApp, aby wysłać link lub numer demo');
+        alert('Podaj numer WhatsApp, aby wysłać link lub numer demo');
         return false;
       }
       return true;
@@ -392,7 +516,7 @@
     e.preventDefault();
     saveSlice(closingForm, 'closing', document.getElementById('closingSaveBtn'), closingStatusMsg, () => {
       if (!closedInput.value) {
-        alert('Trzeba zaznaczyć tak/nie przed wysłaniem');
+        alert('Zaznacz Tak/Nie przed wysłaniem');
         return false;
       }
       return true;
