@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pl" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gili — Klienci</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #E2999B; --rose-dark: #C97A7D; --dark: #1A1A18;
+    --warm-white: #FAF8F4; --muted: #8A8580; --border: #E5E0D8;
+    --success: #4B7A5B; --error: #B84A4A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--warm-white); color: var(--dark);
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 840px; margin: 0 auto; padding: 32px 20px 80px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 24px; }
+  .logo span { color: var(--rose); }
+  h1 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin: 4px 0 0; }
+  .addBtn {
+    padding: 12px 20px; border: none; border-radius: 10px;
+    background: var(--dark); color: #fff; font-size: 14px; font-weight: 600;
+    font-family: inherit; cursor: pointer; white-space: nowrap;
+  }
+  .addBtn:hover { background: #000; }
+  .searchWrap { position: relative; margin-bottom: 20px; }
+  .searchIcon {
+    position: absolute; top: 50%; left: 14px; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none;
+  }
+  #searchInput {
+    width: 100%; padding: 12px 14px 12px 44px; border: 1px solid var(--border);
+    border-radius: 10px; font-size: 15px; font-family: inherit; color: var(--dark);
+    background: #fff;
+  }
+  #searchInput:focus { outline: 2px solid var(--rose); outline-offset: 1px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  thead th {
+    text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--rose-dark); font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--border);
+    background: var(--warm-white);
+  }
+  tbody td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: var(--warm-white); }
+  .name-cell { font-weight: 500; }
+  .sub-cell { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .status-pill {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; background: var(--warm-white); color: var(--muted);
+  }
+  .status-pill.closed { background: #eef5ef; color: var(--success); }
+  .empty, .loading, .error {
+    text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px;
+  }
+  .error { color: var(--error); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="logo">gili<span>.</span></div>
+      <h1>Klienci</h1>
+    </div>
+    <button class="addBtn" id="addBtn">+ Dodaj nowego klienta</button>
+  </div>
+
+  <div class="searchWrap">
+    <input type="text" id="searchInput" placeholder="Szukaj po nazwisku osoby kontaktowej lub nazwie salonu">
+    <svg class="searchIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Salon</th>
+        <th>Miasto</th>
+        <th>Status</th>
+        <th>Ostatnia aktualizacja</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <tr><td colspan="4" class="loading">Ładowanie...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // TODO: zamień na produkcyjny URL (GET) listy klientów w n8n
+  const LIST_URL = "https://maibarzilay.app.n8n.cloud/webhook/lead-list-pl";
+
+  const tableBody = document.getElementById('tableBody');
+  const searchInput = document.getElementById('searchInput');
+  const addBtn = document.getElementById('addBtn');
+  let leads = [];
+
+  function statusLabel(lead) {
+    if (lead.closed === true || lead.closed === 'yes') return { text: 'Zamknięty', closed: true };
+    if (lead.closingStatus) return { text: lead.closingStatus, closed: false };
+    if (lead.callOutcome) return { text: lead.callOutcome, closed: false };
+    return { text: 'Nowy', closed: false };
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    return d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function render(list) {
+    if (!list.length) {
+      tableBody.innerHTML = '<tr><td colspan="4" class="empty">Nie ma jeszcze żadnych klientów. Kliknij "Dodaj nowego klienta", aby zacząć.</td></tr>';
+      return;
+    }
+    tableBody.innerHTML = list.map(lead => {
+      const status = statusLabel(lead);
+      return `
+        <tr onclick="location.href='lead.html?id=${encodeURIComponent(lead.id)}'">
+          <td>
+            <div class="name-cell">${lead.salonName || '(brak nazwy)'}</div>
+            <div class="sub-cell">${lead.contactName || ''}</div>
+          </td>
+          <td>${lead.city || '—'}</td>
+          <td><span class="status-pill ${status.closed ? 'closed' : ''}">${status.text}</span></td>
+          <td>${formatDate(lead.updatedAt)}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  searchInput.addEventListener('input', () => {
+    const term = searchInput.value.trim().toLowerCase();
+    if (!term) { render(leads); return; }
+    render(leads.filter(l =>
+      (l.contactName || '').toLowerCase().includes(term) ||
+      (l.salonName || '').toLowerCase().includes(term)
+    ));
+  });
+
+  addBtn.addEventListener('click', () => {
+    const id = crypto.randomUUID();
+    location.href = `lead.html?id=${encodeURIComponent(id)}`;
+  });
+
+  (async function load() {
+    try {
+      const res = await fetch(LIST_URL);
+      if (!res.ok) throw new Error('bad response');
+      leads = await res.json();
+      leads.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+      render(leads);
+    } catch (err) {
+      tableBody.innerHTML = '<tr><td colspan="4" class="error">Nie udało się załadować listy klientów. Sprawdź połączenie z n8n.</td></tr>';
+    }
+  })();
+</script>
+</body>
+</html>

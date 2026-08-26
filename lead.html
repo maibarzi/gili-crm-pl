@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pl" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gili — Karta klienta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #E2999B; --rose-dark: #C97A7D; --dark: #1A1A18;
+    --warm-white: #FAF8F4; --muted: #8A8580; --border: #E5E0D8;
+    --success: #4B7A5B; --error: #B84A4A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--warm-white); color: var(--dark);
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px 80px; }
+  .back { display: inline-block; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 16px; }
+  .back:hover { color: var(--dark); }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 24px; }
+  .logo span { color: var(--rose); }
+  .card {
+    background: #fff; border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; margin-top: 20px;
+  }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%; background: var(--rose);
+    color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin: 0; }
+  .card-sub { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .hint { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 400; }
+  input[type="text"], input[type="tel"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px;
+    font-size: 15px; font-family: inherit; color: var(--dark); background: var(--warm-white);
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--rose); outline-offset: 1px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  .toggle-row { display: flex; gap: 10px; }
+  .toggle-opt {
+    flex: 1; text-align: center; padding: 12px; border-radius: 10px;
+    border: 1px solid var(--border); cursor: pointer; font-size: 14px; font-weight: 500;
+    background: var(--warm-white);
+  }
+  .toggle-opt.selected.yes { background: #eef5ef; border-color: var(--success); color: var(--success); }
+  .toggle-opt.selected.no { background: #fbecec; border-color: var(--error); color: var(--error); }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .checkbox-item {
+    display: flex; align-items: center; gap: 6px; padding: 9px 14px;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--warm-white);
+    font-size: 14px; font-weight: 400; cursor: pointer; margin: 0;
+  }
+  .checkbox-item input { accent-color: var(--rose); }
+  button.save {
+    width: 100%; padding: 14px; border: none; border-radius: 10px;
+    background: var(--dark); color: #fff; font-size: 15px; font-weight: 600;
+    font-family: inherit; cursor: pointer; margin-top: 20px;
+  }
+  button.save:hover { background: #000; }
+  button.save:disabled { opacity: 0.5; cursor: not-allowed; }
+  .status { margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-size: 13px; display: none; }
+  .status.ok { display: block; background: #eef5ef; color: var(--success); border: 1px solid #cfe3d3; }
+  .status.err { display: block; background: #fbecec; color: var(--error); border: 1px solid #f0cccc; }
+  select { -webkit-appearance: none; appearance: none; }
+  .loadingBanner { text-align: center; padding: 20px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Do listy klientów</a>
+  <div class="logo">gili<span>.</span></div>
+  <div class="loadingBanner" id="loadingBanner">Ładowanie istniejących danych...</div>
+
+  <!-- Rozmowa otwierająca -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step-badge">1</span>
+      <div>
+        <p class="card-title">Rozmowa otwierająca</p>
+        <p class="card-sub">Wstępny wywiad — dane firmy i przebieg rozmowy</p>
+      </div>
+    </div>
+    <form id="openingForm">
+      <div class="field">
+        <label for="repName">Imię osoby dzwoniącej</label>
+        <input type="text" id="repName" name="repName" required>
+      </div>
+      <div class="field">
+        <label for="contactName">Imię i nazwisko osoby kontaktowej</label>
+        <input type="text" id="contactName" name="contactName" required>
+      </div>
+      <div class="field">
+        <label for="salonName">Nazwa salonu</label>
+        <input type="text" id="salonName" name="salonName" required>
+      </div>
+      <div class="field">
+        <label for="city">Miasto / region</label>
+        <input type="text" id="city" name="city" required>
+      </div>
+      <div class="field">
+        <label for="stylistCount">Liczba stylistek/pracowników</label>
+        <input type="number" id="stylistCount" name="stylistCount" min="1">
+      </div>
+      <div class="field">
+        <label>W jaki sposób można się dziś u niej umówić</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="treatwell"> Treatwell</label>
+          <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="booksy"> Booksy</label>
+          <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="fresha"> Fresha</label>
+          <label class="checkbox-item"><input type="checkbox" name="bookingSystem" value="phone_only"> Telefon</label>
+          <label class="checkbox-item"><input type="checkbox" id="bookingSystemOtherCheck" name="bookingSystem" value="other"> Inne</label>
+        </div>
+        <span class="hint">Można zaznaczyć więcej niż jedną opcję</span>
+        <div class="field" id="bookingSystemOtherWrap" hidden>
+          <input type="text" id="bookingSystemOther" name="bookingSystemOther" placeholder="Co dokładnie">
+        </div>
+      </div>
+      <div class="field">
+        <label for="callNotes">Przebieg rozmowy i zastrzeżenia</label>
+        <textarea id="callNotes" name="callNotes"></textarea>
+      </div>
+      <div class="field">
+        <label for="callOutcome">Status</label>
+        <select id="callOutcome" name="callOutcome">
+          <option value="" disabled selected>Wybierz opcję</option>
+          <option value="closing_scheduled">Umówiono rozmowę zamykającą</option>
+          <option value="interested_followup">Zainteresowana — oddzwonić</option>
+          <option value="objection">Niezainteresowana / zastrzeżenia</option>
+          <option value="no_answer">Nie odebrała</option>
+          <option value="wrong_number">Zły numer / nieaktualny</option>
+          <option value="other">Inne</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="followUpDate">Termin ustalony na rozmowę zamykającą</label>
+        <input type="date" id="followUpDate" name="followUpDate">
+      </div>
+      <div class="field">
+        <label for="openingWhatsapp">Numer WhatsApp</label>
+        <input type="tel" id="openingWhatsapp" name="openingWhatsapp" placeholder="436761234567">
+        <span class="hint">Wymagane tylko, jeśli teraz wysyłasz link lub numer demo</span>
+      </div>
+      <div class="field">
+        <label>Wysłać jej teraz link do strony Gili?</label>
+        <div class="toggle-row">
+          <div class="toggle-opt" data-value="yes" id="sendLinkYes">Tak</div>
+          <div class="toggle-opt" data-value="no" id="sendLinkNo">Nie</div>
+        </div>
+        <input type="hidden" id="sendLink" name="sendLink" required>
+      </div>
+      <div class="field">
+        <label>Wysłać jej też numer demo Florence?</label>
+        <div class="toggle-row">
+          <div class="toggle-opt" data-value="yes" id="sendDemoYes">Tak</div>
+          <div class="toggle-opt" data-value="no" id="sendDemoNo">Nie</div>
+        </div>
+        <input type="hidden" id="sendDemo" name="sendDemo" required>
+      </div>
+      <button type="submit" class="save" id="openingSaveBtn">Zapisz</button>
+      <span class="hint">Dane zostaną tu zapisane — przy kolejnym wejściu w ten link będą już uzupełnione</span>
+      <div class="status" id="openingStatus"></div>
+    </form>
+  </div>
+
+  <!-- Rozmowa zamykająca -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step-badge">2</span>
+      <div>
+        <p class="card-title">Rozmowa zamykająca</p>
+        <p class="card-sub">Z właścicielką/właścicielem salonu — faktyczne zamknięcie</p>
+      </div>
+    </div>
+    <form id="closingForm">
+      <div class="field">
+        <label for="closingContact">Z kim rozmawiałam/em z firmy</label>
+        <input type="text" id="closingContact" name="closingContact" placeholder="np. Anna, właścicielka" required>
+      </div>
+      <div class="field">
+        <label for="whatsapp">Numer WhatsApp</label>
+        <input type="tel" id="whatsapp" name="whatsapp" placeholder="436761234567" required>
+        <span class="hint">Format międzynarodowy, bez + i bez spacji — na ten numer zostanie wysłana wiadomość powitalna</span>
+      </div>
+      <div class="field">
+        <label for="closingCallNotes">Przebieg rozmowy i zastrzeżenia</label>
+        <textarea id="closingCallNotes" name="closingCallNotes"></textarea>
+      </div>
+      <div class="field">
+        <label for="closingStatus">Status</label>
+        <select id="closingStatus" name="closingStatus">
+          <option value="" disabled selected>Wybierz opcję</option>
+          <option value="agreed">Zamknięto</option>
+          <option value="hesitant">Waha się — oddzwonić</option>
+          <option value="declined">Odmówiła</option>
+          <option value="unreachable">Nie udało się dodzwonić</option>
+          <option value="other">Inne</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="onboardingNotes">Dodatkowe uwagi przed onboardingiem</label>
+        <textarea id="onboardingNotes" name="onboardingNotes"></textarea>
+      </div>
+      <div class="field">
+        <label>Zamknięto i można wysłać wiadomość powitalną?</label>
+        <div class="toggle-row">
+          <div class="toggle-opt" data-value="yes" id="closedYes">Tak</div>
+          <div class="toggle-opt" data-value="no" id="closedNo">Nie</div>
+        </div>
+        <input type="hidden" id="closed" name="closed" required>
+      </div>
+      <button type="submit" class="save" id="closingSaveBtn">Wyślij</button>
+      <div class="status" id="closingStatusMsg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // TODO: zamień na odpowiednie produkcyjne adresy URL w n8n
+  const GET_URL = "https://maibarzilay.app.n8n.cloud/webhook/lead-get-pl";     // GET ?id=
+  const SAVE_URL = "https://maibarzilay.app.n8n.cloud/webhook/lead-save-pl";   // POST
+
+  // Każda opublikowana wersja tej strony jest przeznaczona tylko dla jednego kraju/języka,
+  // ponieważ każdy język jest podpięty pod swój zatwierdzony template. Aby zduplikować cały
+  // folder dla każdego kraju, zmień tylko poniższą linię w kopii:
+  const TEMPLATE_LANG = "pl"; // de | fr | es | pl
+
+  const params = new URLSearchParams(location.search);
+  let leadId = params.get('id');
+  if (!leadId) {
+    leadId = crypto.randomUUID();
+    const url = new URL(location.href);
+    url.searchParams.set('id', leadId);
+    history.replaceState(null, '', url);
+  }
+
+  const loadingBanner = document.getElementById('loadingBanner');
+  const openingForm = document.getElementById('openingForm');
+  const closingForm = document.getElementById('closingForm');
+  const openingStatus = document.getElementById('openingStatus');
+  const closingStatusMsg = document.getElementById('closingStatusMsg');
+  const closedInput = document.getElementById('closed');
+  const closedYes = document.getElementById('closedYes');
+  const closedNo = document.getElementById('closedNo');
+  const sendLinkInput = document.getElementById('sendLink');
+  const sendLinkYes = document.getElementById('sendLinkYes');
+  const sendLinkNo = document.getElementById('sendLinkNo');
+  const sendDemoInput = document.getElementById('sendDemo');
+  const sendDemoYes = document.getElementById('sendDemoYes');
+  const sendDemoNo = document.getElementById('sendDemoNo');
+
+  function setClosed(value) {
+    closedInput.value = value;
+    closedYes.classList.toggle('selected', value === 'yes');
+    closedYes.classList.toggle('yes', value === 'yes');
+    closedNo.classList.toggle('selected', value === 'no');
+    closedNo.classList.toggle('no', value === 'no');
+  }
+  closedYes.addEventListener('click', () => setClosed('yes'));
+  closedNo.addEventListener('click', () => setClosed('no'));
+
+  function setSendLink(value) {
+    sendLinkInput.value = value;
+    sendLinkYes.classList.toggle('selected', value === 'yes');
+    sendLinkYes.classList.toggle('yes', value === 'yes');
+    sendLinkNo.classList.toggle('selected', value === 'no');
+    sendLinkNo.classList.toggle('no', value === 'no');
+  }
+  sendLinkYes.addEventListener('click', () => setSendLink('yes'));
+  sendLinkNo.addEventListener('click', () => setSendLink('no'));
+
+  function setSendDemo(value) {
+    sendDemoInput.value = value;
+    sendDemoYes.classList.toggle('selected', value === 'yes');
+    sendDemoYes.classList.toggle('yes', value === 'yes');
+    sendDemoNo.classList.toggle('selected', value === 'no');
+    sendDemoNo.classList.toggle('no', value === 'no');
+  }
+  sendDemoYes.addEventListener('click', () => setSendDemo('yes'));
+  sendDemoNo.addEventListener('click', () => setSendDemo('no'));
+
+  const bookingSystemOtherCheck = document.getElementById('bookingSystemOtherCheck');
+  const bookingSystemOtherWrap = document.getElementById('bookingSystemOtherWrap');
+  bookingSystemOtherCheck.addEventListener('change', () => {
+    bookingSystemOtherWrap.hidden = !bookingSystemOtherCheck.checked;
+  });
+
+  function fillForm(form, data) {
+    Object.keys(data).forEach(key => {
+      if (key === 'closed') { setClosed(data[key]); return; }
+      if (key === 'sendLink') { setSendLink(data[key]); return; }
+      if (key === 'sendDemo') { setSendDemo(data[key]); return; }
+      if (key === 'bookingSystem') {
+        const values = String(data[key] || '').split(',').map(v => v.trim()).filter(Boolean);
+        form.querySelectorAll('input[name="bookingSystem"]').forEach(cb => {
+          cb.checked = values.includes(cb.value);
+        });
+        if (values.includes('other')) bookingSystemOtherWrap.hidden = false;
+        return;
+      }
+      const el = form.elements[key];
+      if (!el || data[key] === null || data[key] === undefined) return;
+      el.value = data[key];
+    });
+  }
+
+  (async function load() {
+    try {
+      const res = await fetch(`${GET_URL}?id=${encodeURIComponent(leadId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Object.keys(data).length) {
+          fillForm(openingForm, data);
+          fillForm(closingForm, data);
+        }
+      }
+    } catch (err) {
+      // Nowy klient, który jeszcze nie został zapisany — to normalne, po prostu kontynuujemy z pustym formularzem
+    } finally {
+      loadingBanner.style.display = 'none';
+    }
+  })();
+
+  async function saveSlice(form, slice, btn, statusEl, extraValidation) {
+    if (!form.reportValidity()) return;
+    if (extraValidation && !extraValidation()) return;
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Wysyłanie...';
+    statusEl.className = 'status';
+    statusEl.style.display = 'none';
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (form.querySelector('input[name="bookingSystem"]')) {
+      data.bookingSystem = Array.from(form.querySelectorAll('input[name="bookingSystem"]:checked'))
+        .map(el => el.value).join(',');
+    }
+    data.id = leadId;
+    data.slice = slice;
+    data.templateLang = TEMPLATE_LANG;
+    data.updatedAt = new Date().toISOString();
+
+    try {
+      const res = await fetch(SAVE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('bad response');
+      statusEl.textContent = (slice === 'closing' && data.closed === 'yes') || (slice === 'opening' && (data.sendLink === 'yes' || data.sendDemo === 'yes'))
+        ? 'Zapisano. Wiadomość WhatsApp zostanie wysłana automatycznie.'
+        : 'Zapisano pomyślnie.';
+      statusEl.className = 'status ok';
+    } catch (err) {
+      statusEl.textContent = 'Coś poszło nie tak podczas zapisywania. Spróbuj ponownie, a jeśli problem się powtarza — poinformuj Mai.';
+      statusEl.className = 'status err';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  openingForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveSlice(openingForm, 'opening', document.getElementById('openingSaveBtn'), openingStatus, () => {
+      if (!sendLinkInput.value) {
+        alert('Trzeba zaznaczyć tak/nie w sprawie wysłania linku przed zapisaniem');
+        return false;
+      }
+      if (!sendDemoInput.value) {
+        alert('Trzeba zaznaczyć tak/nie w sprawie wysłania numeru demo przed zapisaniem');
+        return false;
+      }
+      if ((sendLinkInput.value === 'yes' || sendDemoInput.value === 'yes') && !document.getElementById('openingWhatsapp').value.trim()) {
+        alert('Trzeba podać numer WhatsApp, aby wysłać link lub numer demo');
+        return false;
+      }
+      return true;
+    });
+  });
+
+  closingForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveSlice(closingForm, 'closing', document.getElementById('closingSaveBtn'), closingStatusMsg, () => {
+      if (!closedInput.value) {
+        alert('Trzeba zaznaczyć tak/nie przed wysłaniem');
+        return false;
+      }
+      return true;
+    });
+  });
+</script>
+</body>
+</html>
