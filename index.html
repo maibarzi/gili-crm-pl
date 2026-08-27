@@ -75,6 +75,12 @@
     </svg>
   </div>
 
+  <div class="field" style="margin-bottom:20px;">
+    <select id="statusFilter" style="width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px; font-size:15px; font-family:inherit; color:var(--dark); background:#fff;">
+      <option value="">Pokaż wszystkie</option>
+    </select>
+  </div>
+
   <p style="text-align:center; margin: -4px 0 20px;">
     <a href="#" id="manualAddLink" style="font-size:13px; color: var(--muted);">Nie ma jej na liście? Dodaj ręcznie →</a>
   </p>
@@ -137,20 +143,40 @@
     }).join('');
   }
 
-  searchInput.addEventListener('input', () => {
+  searchInput.addEventListener('input', applyFilters);
+
+  const statusFilter = document.getElementById('statusFilter');
+  statusFilter.addEventListener('change', applyFilters);
+
+  function applyFilters() {
     const term = searchInput.value.trim().toLowerCase();
-    if (!term) { render(prospects); return; }
-    render(prospects.filter(p =>
-      (p.name || '').toLowerCase().includes(term) ||
-      (p.fullName || '').toLowerCase().includes(term)
-    ));
-  });
+    const status = statusFilter.value;
+    let filtered = prospects;
+    if (status) {
+      filtered = filtered.filter(p => (p.status || '').trim() === status);
+    }
+    if (term) {
+      filtered = filtered.filter(p =>
+        (p.name || '').toLowerCase().includes(term) ||
+        (p.fullName || '').toLowerCase().includes(term)
+      );
+    }
+    render(filtered);
+  }
+
+  function populateStatusFilter(list) {
+    const statuses = [...new Set(list.map(p => (p.status || '').trim()).filter(Boolean))];
+    statuses.sort();
+    statusFilter.innerHTML = '<option value="">Pokaż wszystkie</option>' +
+      statuses.map(s => `<option value="${s}">${s === '-' ? 'Brak kontaktu' : s}</option>`).join('');
+  }
 
   (async function load() {
     try {
       const res = await fetch(LIST_URL);
       if (!res.ok) throw new Error('bad response');
       prospects = await res.json();
+      populateStatusFilter(prospects);
       render(prospects);
     } catch (err) {
       grid.innerHTML = '<div class="error">Nie udało się załadować listy prospektów.</div>';

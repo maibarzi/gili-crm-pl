@@ -207,19 +207,19 @@
     <form id="openingForm">
       <div class="field">
         <label for="repName">Imię konsultanta/konsultantki</label>
-        <input type="text" id="repName" name="repName" required>
+        <input type="text" id="repName" name="repName">
       </div>
       <div class="field">
         <label for="contactName">Imię osoby kontaktowej</label>
-        <input type="text" id="contactName" name="contactName" required>
+        <input type="text" id="contactName" name="contactName">
       </div>
       <div class="field">
         <label for="salonName">Nazwa salonu</label>
-        <input type="text" id="salonName" name="salonName" required>
+        <input type="text" id="salonName" name="salonName">
       </div>
       <div class="field">
         <label for="city">Miasto / region</label>
-        <input type="text" id="city" name="city" required>
+        <input type="text" id="city" name="city">
       </div>
       <div class="field">
         <label for="stylistCount">Liczba stylistek/pracownic</label>
@@ -270,7 +270,7 @@
           <div class="toggle-opt" data-value="yes" id="sendLinkYes">Tak</div>
           <div class="toggle-opt" data-value="no" id="sendLinkNo">Nie</div>
         </div>
-        <input type="hidden" id="sendLink" name="sendLink" required>
+        <input type="hidden" id="sendLink" name="sendLink">
       </div>
       <div class="field">
         <label>Wysłać też numer demo Florence?</label>
@@ -278,7 +278,7 @@
           <div class="toggle-opt" data-value="yes" id="sendDemoYes">Tak</div>
           <div class="toggle-opt" data-value="no" id="sendDemoNo">Nie</div>
         </div>
-        <input type="hidden" id="sendDemo" name="sendDemo" required>
+        <input type="hidden" id="sendDemo" name="sendDemo">
       </div>
       <button type="submit" class="save" id="openingSaveBtn">Zapisz</button>
       <span class="hint">Dane zostaną tu zapisane — przy kolejnym wejściu w ten link będą już uzupełnione</span>
@@ -298,11 +298,11 @@
     <form id="closingForm">
       <div class="field">
         <label for="closingContact">Z kim rozmawiałam/em z firmy</label>
-        <input type="text" id="closingContact" name="closingContact" placeholder="np. Anna, właścicielka" required>
+        <input type="text" id="closingContact" name="closingContact" placeholder="np. Anna, właścicielka">
       </div>
       <div class="field">
         <label for="whatsapp">Numer WhatsApp</label>
-        <input type="tel" id="whatsapp" name="whatsapp" placeholder="48123456789" required>
+        <input type="tel" id="whatsapp" name="whatsapp" placeholder="48123456789">
         <span class="hint">Format międzynarodowy, bez + i bez spacji — na ten numer trafi wiadomość powitalna</span>
       </div>
       <div class="field">
@@ -330,7 +330,7 @@
           <div class="toggle-opt" data-value="yes" id="closedYes">Tak</div>
           <div class="toggle-opt" data-value="no" id="closedNo">Nie</div>
         </div>
-        <input type="hidden" id="closed" name="closed" required>
+        <input type="hidden" id="closed" name="closed">
       </div>
       <button type="submit" class="save" id="closingSaveBtn">Wyślij</button>
       <div class="status" id="closingStatusMsg"></div>
@@ -496,14 +496,6 @@
   openingForm.addEventListener('submit', (e) => {
     e.preventDefault();
     saveSlice(openingForm, 'opening', document.getElementById('openingSaveBtn'), openingStatus, () => {
-      if (!sendLinkInput.value) {
-        alert('Zaznacz Tak/Nie przy wysyłce linku przed zapisem');
-        return false;
-      }
-      if (!sendDemoInput.value) {
-        alert('Zaznacz Tak/Nie przy wysyłce numeru demo przed zapisem');
-        return false;
-      }
       if ((sendLinkInput.value === 'yes' || sendDemoInput.value === 'yes') && !document.getElementById('openingWhatsapp').value.trim()) {
         alert('Podaj numer WhatsApp, aby wysłać link lub numer demo');
         return false;
@@ -515,8 +507,8 @@
   closingForm.addEventListener('submit', (e) => {
     e.preventDefault();
     saveSlice(closingForm, 'closing', document.getElementById('closingSaveBtn'), closingStatusMsg, () => {
-      if (!closedInput.value) {
-        alert('Zaznacz Tak/Nie przed wysłaniem');
+      if (closedInput.value === 'yes' && !document.getElementById('whatsapp').value.trim()) {
+        alert('Podaj numer WhatsApp, aby wysłać wiadomość powitalną');
         return false;
       }
       return true;
