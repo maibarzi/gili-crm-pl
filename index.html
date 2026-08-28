@@ -116,6 +116,15 @@
     return phone.split(',')[0].trim().replace(/[^\d]/g, '');
   }
 
+  function statusPriority(status) {
+    const s = (status || '').toLowerCase().trim();
+    if (s.includes('followup')) return 0;
+    if (s.includes("didn't pick up") || s.includes('no answer')) return 1;
+    if (!s || s === '-') return 2;
+    if (s.includes('not interested') || s.includes('invalid')) return 4;
+    return 3; // any other status (e.g. Redirect, Closed, Other)
+  }
+
   function stableId(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -129,7 +138,8 @@
       grid.innerHTML = '<div class="empty">Brak wyników</div>';
       return;
     }
-    grid.innerHTML = list.map(p => {
+    const sorted = [...list].sort((a, b) => statusPriority(a.status) - statusPriority(b.status));
+    grid.innerHTML = sorted.map(p => {
       const phoneDigits = firstPhone(p.phone);
       const leadId = stableId(p.domain || p.phone || p.name || '');
       const params = new URLSearchParams({ id: leadId, salonName: p.fullName || p.name || '' });
