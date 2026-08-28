@@ -91,8 +91,6 @@
 </div>
 
 <script>
-  // TODO: zamienić na Production URL (GET) webhooka, który odczytuje
-  // dane bezpośrednio z Google Sheet (bez pośredniej tabeli w Postgres)
   const LIST_URL = "https://maibarzilay.app.n8n.cloud/webhook/prospects-list-pl";
 
   const grid = document.getElementById('grid');
@@ -118,6 +116,14 @@
     return phone.split(',')[0].trim().replace(/[^\d]/g, '');
   }
 
+  function stableId(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    return 'pl-' + Math.abs(hash).toString(36);
+  }
+
   function render(list) {
     if (!list.length) {
       grid.innerHTML = '<div class="empty">Brak wyników</div>';
@@ -125,7 +131,7 @@
     }
     grid.innerHTML = list.map(p => {
       const phoneDigits = firstPhone(p.phone);
-      const leadId = crypto.randomUUID();
+      const leadId = stableId(p.domain || p.phone || p.name || '');
       const params = new URLSearchParams({ id: leadId, salonName: p.fullName || p.name || '' });
       if (phoneDigits) params.set('whatsapp', phoneDigits);
       const href = `lead.html?${params.toString()}`;
