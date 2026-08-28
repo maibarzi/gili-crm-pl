@@ -117,6 +117,40 @@
 </style>
 </head>
 <body>
+<!-- Hidden forms so Netlify's build-time bot detects these form shapes.
+     Never rendered or submitted natively — the real submission happens via
+     fetch() in saveSlice(), mirroring to Netlify Forms as a redundant data source. -->
+<form name="opening-call" data-netlify="true" hidden>
+  <input type="text" name="id">
+  <input type="text" name="slice">
+  <input type="text" name="templateLang">
+  <input type="text" name="updatedAt">
+  <input type="text" name="repName">
+  <input type="text" name="contactName">
+  <input type="text" name="salonName">
+  <input type="text" name="city">
+  <input type="text" name="stylistCount">
+  <input type="text" name="bookingSystem">
+  <input type="text" name="bookingSystemOther">
+  <textarea name="callNotes"></textarea>
+  <input type="text" name="callOutcome">
+  <input type="text" name="followUpDate">
+  <input type="text" name="openingWhatsapp">
+  <input type="text" name="sendLink">
+  <input type="text" name="sendDemo">
+</form>
+<form name="closing-call" data-netlify="true" hidden>
+  <input type="text" name="id">
+  <input type="text" name="slice">
+  <input type="text" name="templateLang">
+  <input type="text" name="updatedAt">
+  <input type="text" name="closingContact">
+  <input type="text" name="whatsapp">
+  <textarea name="closingCallNotes"></textarea>
+  <input type="text" name="closingStatus">
+  <textarea name="onboardingNotes"></textarea>
+  <input type="text" name="closed">
+</form>
 <div class="wrap">
   <a class="back" href="index.html">← Wróć do listy klientów</a>
   <div class="logo">gili<span>.</span></div>
@@ -472,6 +506,20 @@
     data.slice = slice;
     data.templateLang = TEMPLATE_LANG;
     data.updatedAt = new Date().toISOString();
+
+    // Best-effort mirror to Netlify Forms as a redundant data source — never blocks the main save.
+    try {
+      const formName = slice === 'opening' ? 'opening-call' : 'closing-call';
+      const encoded = Object.entries({ 'form-name': formName, ...data })
+        .filter(([, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+        .join('&');
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encoded
+      }).catch(() => {});
+    } catch (err) {}
 
     try {
       const res = await fetch(SAVE_URL, {
