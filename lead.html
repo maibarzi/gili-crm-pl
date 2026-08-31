@@ -445,11 +445,15 @@
       if (!foundExisting) {
         const urlSalonName = params.get('salonName');
         const urlWhatsapp = params.get('whatsapp');
+        const urlCity = params.get('city');
         if (urlSalonName) {
           document.getElementById('salonName').value = urlSalonName;
         }
         if (urlWhatsapp) {
           document.getElementById('openingWhatsapp').value = urlWhatsapp;
+        }
+        if (urlCity) {
+          document.getElementById('city').value = urlCity;
         }
       }
       loadingBanner.style.display = 'none';

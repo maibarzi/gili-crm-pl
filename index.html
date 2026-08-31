@@ -144,6 +144,7 @@
       const leadId = stableId(p.domain || p.phone || p.name || '');
       const params = new URLSearchParams({ id: leadId, salonName: p.fullName || p.name || '' });
       if (phoneDigits) params.set('whatsapp', phoneDigits);
+      if (p.city) params.set('city', p.city);
       const href = `lead.html?${params.toString()}`;
       return `
         <div class="card" onclick="location.href='${href}'">
