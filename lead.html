@@ -433,7 +433,13 @@
       const res = await fetch(`${GET_URL}?id=${encodeURIComponent(leadId)}`);
       if (res.ok) {
         const data = await res.json();
-        if (data && Object.keys(data).length) {
+        // A prospect row can already exist (from the prospect list migration) with every
+        // call-tracking field still null — that's not a real saved call, just a pre-existing
+        // prospect record. Only treat it as "existing" if some actual call data was saved.
+        const hasCallData = data && Object.entries(data).some(
+          ([key, value]) => key !== 'id' && value !== null && value !== undefined && value !== ''
+        );
+        if (hasCallData) {
           fillForm(openingForm, data);
           fillForm(closingForm, data);
           foundExisting = true;
